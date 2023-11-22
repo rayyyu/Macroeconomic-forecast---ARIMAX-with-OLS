@@ -13,7 +13,7 @@ warnings.filterwarnings('ignore')
 factor_number_ols = 3
 factor_number_olsAR = 5
 factor_number_arimax = 7
-# 滚动窗口长度
+# Length of rolling window
 window_length = 4
 ols_saves = pd.ExcelWriter(r'C:\Users\Ray S Yu\Desktop\ForecastStream\ARIMAX_sh_0823.xlsx')
 rmse_save = pd.ExcelWriter(r'C:\Users\Ray S Yu\Desktop\ForecastStream\ARIMAX_sh_rmse_0823.xlsx')
@@ -47,7 +47,8 @@ def buildLagLeadFeatures(s, lag, lead, dropna=True):
         return res, transfer_dict
 
 
-# 对原始数据进行Transformation和Lag及Lead处理
+# Lag/Lead transform the input data
+
 def buildFeatures(macro_df, lag, lead, dropna=True):
     macro_temp = macro_df
     macro_temp1 = macro_temp
@@ -67,7 +68,6 @@ def vifTest(ind_Candidate_df):
 
 def multivariateLRTest(dep_t, ind_raw, validation, ytrainfinder, ytestfinder, dept_name):
     vif = vifTest(ind_raw)
-    # 进行线性回归
     X = sm.add_constant(ind_raw)
     model = sm.OLS(dep_t, X)
     LR = model.fit()
@@ -90,7 +90,6 @@ def multivariateLRTest(dep_t, ind_raw, validation, ytrainfinder, ytestfinder, de
 
 
 def ypredict(dep_t, ind_raw, validation):
-    # 进行线性回归
     X = sm.add_constant(ind_raw)
     model = sm.OLS(dep_t, X)
     LR = model.fit()
@@ -100,7 +99,6 @@ def ypredict(dep_t, ind_raw, validation):
 
 
 def ypredict_undiff(dep_t, ind_raw, validation, ytrainfinder):
-    # 进行线性回归
     X = sm.add_constant(ind_raw)
     model = sm.OLS(dep_t, X)
     LR = model.fit()
@@ -116,7 +114,6 @@ def multivariateTest(model, dep_t, ind_raw, validation, ytest):
     if model == 'LR':
         return (multivariateLRTest(dep_t, ind_raw, validation, ytest))
     else:
-        # 完善如Lasso等回归方式
         return ('Only LR supported for now')
 
 
@@ -128,7 +125,8 @@ dep_sh = pd.read_excel(r'C:\Users\Ray S Yu\Desktop\macro datasets\上农因子�
 dep_sh = dep_sh.interpolate(method='linear', limit_direction='both', axis=0)
 xpredict = pd.read_excel(r'C:\Users\Ray S Yu\Desktop\macro datasets\xtest_arimax_上农.xlsx', index_col=0)
 
-# 上海地区主要因子数据准备
+# Data Cleaning
+
 date = '2014-03-31'
 dep_data_all = dep_sh[dep_sh.index >= date]
 dep_finder = dep_data_all.iloc[1:]
@@ -155,7 +153,6 @@ list_y = dep_data_diff.columns
 obs = np.sort(ind_pd_raw.index.unique())
 cv = TimeSeriesSplit(n_splits=window_length, test_size=3, gap=0)
 
-# 上海因子映射表
 ind_dict = {'sh_v0': 'CPI', 'sh_v1': 'GDP_cum', 'sh_v2': 'IND', 'sh_v3': 'CPI',
             'sh_v4': 'IND', 'sh_v5': 'FIN', 'sh_v6': 'RET', 'sh_v7': 'RET', 'sh_v8': 'PPI',
             'sh_v9': 'PPI', 'sh_v10': 'PPI', 'sh_v11': 'PPI', 'sh_v12': 'EX', 'sh_v13': 'EX',
