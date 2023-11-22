@@ -13,7 +13,9 @@ warnings.filterwarnings('ignore')
 factor_number_ols = 3
 factor_number_olsAR = 5
 factor_number_arimax = 7
-# 滚动窗口长度
+
+# Length of Rolling Window
+
 window_length = 4
 ols_saves = pd.ExcelWriter(r'C:\Users\Ray S Yu\Desktop\ForecastStream\ARIMAX_sh_forecast_0824.xlsx')
 rmse_save = pd.ExcelWriter(r'C:\Users\Ray S Yu\Desktop\ForecastStream\ARIMAX_sh_rmse_score.xlsx')
@@ -45,9 +47,7 @@ def buildLagLeadFeatures(s, lag, lead, dropna=True):
         return res.dropna(), transfer_dict
     else:
         return res, transfer_dict
-
-
-# 对原始数据进行Transformation和Lag及Lead处理
+        
 def buildFeatures(macro_df, lag, lead, dropna=True):
     macro_temp = macro_df
     macro_temp1 = macro_temp
@@ -90,7 +90,6 @@ def multivariateLRTest(dep_t, ind_raw, validation, ytrainfinder, ytestfinder, de
 
 
 def ypredict(dep_t, ind_raw, validation):
-    # 进行线性回归
     X = sm.add_constant(ind_raw)
     model = sm.OLS(dep_t, X)
     LR = model.fit()
@@ -100,7 +99,6 @@ def ypredict(dep_t, ind_raw, validation):
 
 
 def ypredict_undiff(dep_t, ind_raw, validation, ytrainfinder):
-    # 进行线性回归
     X = sm.add_constant(ind_raw)
     model = sm.OLS(dep_t, X)
     LR = model.fit()
@@ -116,7 +114,6 @@ def multivariateTest(model, dep_t, ind_raw, validation, ytest):
     if model == 'LR':
         return (multivariateLRTest(dep_t, ind_raw, validation, ytest))
     else:
-        # 完善如Lasso等回归方式
         return ('Only LR supported for now')
 
 
